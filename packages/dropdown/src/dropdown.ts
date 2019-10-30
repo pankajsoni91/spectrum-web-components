@@ -67,6 +67,8 @@ export class Dropdown extends Focusable {
 
     public optionsMenu: Menu | null = null;
 
+    public overlayMenu: Menu | null = null;
+
     @property({ type: Boolean, reflect: true })
     public quiet = false;
 
@@ -81,9 +83,7 @@ export class Dropdown extends Focusable {
 
     public constructor() {
         super();
-        this.onClick = this.onClick.bind(this);
         this.onKeydown = this.onKeydown.bind(this);
-        this.addEventListener('click', this.onClick);
 
         this.addEventListener(
             'sp-menu-item-query-role',
@@ -125,7 +125,7 @@ export class Dropdown extends Focusable {
     }
 
     protected onButtonClick(): void {
-        this.toggle();
+        this.open = true;
     }
 
     public onButtonFocus(): void {
@@ -159,10 +159,10 @@ export class Dropdown extends Focusable {
             return;
         }
         /* istanbul ignore if */
-        if (this.optionsMenu === null) {
+        if (this.optionsMenu === null || this.button === undefined) {
             return;
         }
-        this.open = true;
+        this.button.click();
     }
     public setValueFromItem(item: MenuItem): void {
         const oldSelectedItemText = this.selectedItemText;
@@ -226,24 +226,54 @@ export class Dropdown extends Focusable {
     protected render(): TemplateResult {
         return html`
             <sp-icons-medium></sp-icons-medium>
-            <button
-                aria-haspopup="true"
-                id="button"
-                @blur=${this.onButtonBlur}
-                @click=${this.onButtonClick}
-                @focus=${this.onButtonFocus}
-                ?disabled=${this.disabled}
+            <overlay-trigger
+                @sp-overlay:close=${() => (this.open = false)}
+                offset="0"
             >
-                ${this.buttonContent}
-            </button>
-            <sp-popover direction="bottom" id="popover" ?open=${this.open}>
-                <slot name="options" @slotchange=${this.onOptionsChange}>
-                    <sp-menu-item disabled>
-                        There are no options currently available.
-                    </sp-menu-item>
-                </slot>
-            </sp-popover>
+                <button
+                    aria-haspopup="true"
+                    id="button"
+                    slot="trigger"
+                    @blur=${this.onButtonBlur}
+                    @click=${this.onButtonClick}
+                    @focus=${this.onButtonFocus}
+                    ?disabled=${this.disabled}
+                >
+                    ${this.buttonContent}
+                </button>
+                <sp-popover
+                    direction="bottom"
+                    id="popover"
+                    slot="click-content"
+                    ?open=${this.open}
+                    @returned=${this.toggle}
+                >
+                    <sp-menu id="menu" @click=${this.onClick}>
+                        ${this.optionsMenu
+                            ? this.optionsMenu.menuItems.map(
+                                  (item) => html`
+                                      <sp-menu-item>
+                                          ${item.textContent}
+                                      </sp-menu-item>
+                                  `
+                              )
+                            : html`
+                                  <sp-menu-item disabled>
+                                      There are no options currently available.
+                                  </sp-menu-item>
+                              `}
+                    </sp-menu>
+                </sp-popover>
+            </overlay-trigger>
+            <slot name="options" @slotchange=${this.onOptionsChange}></slot>
         `;
+    }
+
+    protected firstUpdated(): void {
+        super.firstUpdated();
+        if (this.shadowRoot) {
+            this.overlayMenu = this.shadowRoot.querySelector('#menu');
+        }
     }
 
     protected updated(changedProperties: PropertyValues): void {
@@ -270,11 +300,13 @@ export class Dropdown extends Focusable {
         }
         if (changedProperties.has('open') && this.open) {
             requestAnimationFrame(() => {
-                /* istanbul ignore if */
-                if (this.optionsMenu === null) {
-                    return;
-                }
-                this.optionsMenu.focus();
+                requestAnimationFrame(() => {
+                    /* istanbul ignore if */
+                    if (this.overlayMenu === null) {
+                        return;
+                    }
+                    this.overlayMenu.focus();
+                });
             });
         }
     }

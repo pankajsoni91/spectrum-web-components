@@ -16,6 +16,7 @@ import {
     property,
     CSSResultArray,
     TemplateResult,
+    query,
 } from 'lit-element';
 
 import overlayTriggerStyles from './overlay-trigger.css.js';
@@ -39,6 +40,12 @@ export class OverlayTrigger extends LitElement {
         return [overlayTriggerStyles];
     }
 
+    @query('#click')
+    private clickContentContainer?: HTMLDivElement;
+
+    @query('#click')
+    private hoverContentContainer?: HTMLDivElement;
+
     @property({ reflect: true })
     public placement: Placement = 'bottom';
 
@@ -60,6 +67,15 @@ export class OverlayTrigger extends LitElement {
         if (!overlayElement) {
             return;
         }
+        const container = isClick
+            ? this.clickContentContainer
+            : this.hoverContentContainer;
+        if (container) {
+            container.classList.add('showing');
+        }
+        const width = overlayElement.offsetWidth;
+        overlayElement.style.width = `${width}px`;
+
         const overlayOpenDetail: OverlayOpenDetail = {
             content: overlayElement,
             delay: delay,
@@ -78,6 +94,9 @@ export class OverlayTrigger extends LitElement {
             }
         );
 
+        if (container) {
+            container.classList.remove('showing');
+        }
         this.dispatchEvent(overlayOpenEvent);
     }
 
@@ -136,11 +155,13 @@ export class OverlayTrigger extends LitElement {
             >
                 <slot name="trigger"></slot>
             </div>
-            <div id="overlay-content">
+            <div id="click" class="overlay-content">
                 <slot
                     @slotchange=${this.onClickSlotChange}
                     name="click-content"
                 ></slot>
+            </div>
+            <div id="hover" class="overlay-content">
                 <slot
                     @slotchange=${this.onHoverSlotChange}
                     name="hover-content"

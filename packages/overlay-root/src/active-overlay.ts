@@ -112,6 +112,7 @@ export class ActiveOverlay extends LitElement {
 
     private placeholder?: Comment;
     private root?: HTMLElement;
+    private oldSlot: string | null = null;
 
     @property()
     public _state = stateTransition();
@@ -197,6 +198,7 @@ export class ActiveOverlay extends LitElement {
         }
 
         this.overlayContent = element;
+        this.oldSlot = this.overlayContent.getAttribute('slot');
         this.overlayContent.setAttribute('slot', 'overlay');
         this.appendChild(this.overlayContent);
     }
@@ -204,7 +206,11 @@ export class ActiveOverlay extends LitElement {
     private returnOverlayContent(): void {
         if (!this.overlayContent) return;
 
-        this.overlayContent.removeAttribute('slot');
+        if (this.oldSlot === null) {
+            this.overlayContent.removeAttribute('slot');
+        } else {
+            this.overlayContent.setAttribute('slot', this.oldSlot);
+        }
 
         if (this.placeholder && this.placeholder.parentElement) {
             this.placeholder.parentElement.replaceChild(
@@ -213,6 +219,8 @@ export class ActiveOverlay extends LitElement {
             );
         }
         delete this.placeholder;
+
+        this.overlayContent.dispatchEvent(new CustomEvent('returned'));
     }
 
     private get hasSlotenOverlayContent(): boolean {

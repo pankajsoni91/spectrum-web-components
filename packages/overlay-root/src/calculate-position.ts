@@ -487,6 +487,12 @@ export default function calculatePosition(
         childOffset.left +=
             parseInt(target.style.marginLeft as string, 10) || 0;
     }
+    {
+        // Manage target left offsest
+        const { top, left } = target.getBoundingClientRect() as Offset;
+        childOffset.top += top;
+        childOffset.left += left;
+    }
 
     const {
         top,

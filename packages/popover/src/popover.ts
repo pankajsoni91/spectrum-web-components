@@ -36,6 +36,9 @@ export class Popover extends LitElement {
     public direction: 'top' | 'bottom' | 'left' | 'right' | 'none' = 'none';
 
     @property({ type: Boolean, reflect: true })
+    public open = false;
+
+    @property({ type: Boolean, reflect: true })
     public tip = false;
 
     protected renderTip(): TemplateResult {
