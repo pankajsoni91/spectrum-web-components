@@ -59,6 +59,7 @@
         "@spectrum-web-components/overlay-root": "^0.1.7",
         "@spectrum-web-components/overlay-trigger": "^0.1.7",
         "@spectrum-web-components/popover": "^0.2.1",
+        "@spectrum-web-components/quick-actions": "^0.0.1",
         "@spectrum-web-components/radio": "^0.2.3",
         "@spectrum-web-components/radio-group": "^0.1.9",
         "@spectrum-web-components/search": "^0.2.4",

@@ -29,6 +29,7 @@ export * from '@spectrum-web-components/menu-item';
 export * from '@spectrum-web-components/overlay-root';
 export * from '@spectrum-web-components/overlay-trigger';
 export * from '@spectrum-web-components/popover';
+export * from '@spectrum-web-components/quick-actions';
 export * from '@spectrum-web-components/radio';
 export * from '@spectrum-web-components/radio-group';
 export * from '@spectrum-web-components/search';
