@@ -29,14 +29,16 @@ export class LayoutElement extends RouteComponent {
     render() {
         return html`
             <sp-theme color="light" scale="medium" id="app">
-                <div id="body">
-                    <docs-side-nav id="side-nav"></docs-side-nav>
-                    <div id="layout-content">
-                        <div id="page">
-                            ${this.renderContent()}
+                <overlay-root>
+                    <div id="body">
+                        <docs-side-nav id="side-nav"></docs-side-nav>
+                        <div id="layout-content">
+                            <div id="page">
+                                ${this.renderContent()}
+                            </div>
                         </div>
                     </div>
-                </div>
+                </overlay-root>
             </sp-theme>
         `;
     }

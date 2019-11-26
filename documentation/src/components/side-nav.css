@@ -16,7 +16,6 @@ governing permissions and limitations under the License.
     max-height: 100vh;
     overflow: visible;
     position: relative;
-    z-index: 1;
 }
 
 #nav-header {
