@@ -1,0 +1,16 @@
+:host {
+    display: block;
+    margin-top: 24px;
+}
+
+#search-field {
+    display: block;
+}
+
+sp-popover {
+    width: 368px;
+    min-height: 220px;
+    max-height: calc(100vh - 200px);
+    margin-top: 5px;
+    z-index: 1;
+}

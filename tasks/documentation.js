@@ -42,6 +42,15 @@ const watchComponentDocumentation = () => {
     );
 };
 
+const buildSearchIndex = () => {
+    return exec(
+        `node "${path.join(
+            projectDir,
+            'documentation/scripts/buildSearchIndex.js'
+        )}"`
+    );
+};
+
 const webpackDevServer = () => {
     const config = Object.assign(webpackConfig, { mode: 'development' });
     const compiler = webpack(config);
@@ -86,11 +95,16 @@ const webpackBuild = async () => {
 };
 
 module.exports = {
-    docsCompile: gulp.series(extractComponentDocumentation, webpackBuild),
+    docsCompile: gulp.series(
+        gulp.parallel(extractComponentDocumentation, buildSearchIndex),
+        webpackBuild
+    ),
     docsWatchCompile: gulp.parallel(
+        buildSearchIndex,
         watchComponentDocumentation,
         webpackDevServer
     ),
+    buildSearchIndex,
     extractComponentDocumentation,
     webpackBuild,
 };
