@@ -20,6 +20,8 @@ commands:
             - save_cache:
                   paths:
                       - node_modules
+                      - ~/.yarn
+                      - ~/.cache
                   key: v1-dependencies-{{ arch }}-{{ checksum "yarn.lock" }}
             - run:
                   name: prepare test git user
@@ -28,10 +30,7 @@ commands:
         steps:
             - checkout
             - attach_workspace:
-                  at: ~/
-            - run:
-                  name: Installing Dependencies
-                  command: yarn --ignore-scripts
+                  at: ~/project/
             - run:
                   name: prepare test git user
                   command: git config --global user.email "circleci@example.com" && git config --global user.name "CircleCi Build"
@@ -60,10 +59,11 @@ jobs:
                   command: yarn docs:ci
 
             - persist_to_workspace:
-                  root: ~/
+                  root: ~/project/
                   paths:
-                      - project/node_modules
-                      - project/documentation/dist
+                      - node_modules
+                      - packages/*/node_modules
+                      - documentation/dist
 
     visual-testing:
         executor: node8
